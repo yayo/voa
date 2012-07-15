@@ -78,10 +78,17 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <div id="List_Title"><a href="/VOA_Special_English">VOA慢速英语听力最近更新</a></div>
 <span id="blist"><ul>
 PART1
-
 $part1 =~ s/\n/\r\n/g;
 
-#$part1=substr($part1,0,length($part1)-1);
+my $part2=<<PART2;
+ </ul></span>
+</div><div class="clearing"></div></div>
+<div class="clearing"></div>
+<div id="footer"><a href="/"><img  src="/images/copyright.gif" alt="VOA美国之音"></a> <div id="count"><script language=javascript src="/js/count.js"></script> </div> </div>
+</body></html>
+PART2
+$part2 =~ s/\n/\r\n/g;
+$part2=substr($part2,0,length($part2)-2);
 
 
 #my $sock=IO::Socket::Socks->new(ProxyAddr=>'127.0.0.1',ProxyPort=>'9050',ConnectAddr=>'www.51voa.com',ConnectPort=>80,SocksDebug=>0);
@@ -117,19 +124,104 @@ else
        exit();
       }
      else
-      {
-       #print($body);
-       #print(length($part1).' '.length($part3));
-       if(substr($body,0,length($part1)) ne $part1)
+      {if(substr($body,0,length($part1)) ne $part1)
         {warn("PART1");
          exit();
-         
         }
        else
-        {
-         #print('OK');
-         $body=substr($body,length($part1));
-         print($body);
+        {$body=substr($body,length($part1));
+         my $i=0;
+         while($body =~ /<li>(.*?)<\/li>/g)
+          {
+           $i+=4+length($1)+5;
+my %type=(
+'Technology_Report'=>'tech',
+'This_is_America'=>'',
+'Agriculture_Report'=>'ag',
+'Science_in_the_News'=>'',
+'Health_Report'=>'health',
+'Explorations'=>'',
+'Education_Report'=>'ed',
+'The_Making_of_a_Nation'=>'',
+'Economics_Report'=>'econ',
+'American_Mosaic'=>'',
+'In_the_News'=>'itn',
+'American_Stories'=>'',
+'Words_And_Their_Stories'=>'ws',
+'People_in_America'=>'',
+'VOA_News'=>'',
+);
+           #print($1."\n\n");
+           if($1 !~ /^<a href="\/(.*?)_1[.]html" target="_blank">[[] ([^]]*) []] <\/a> (.*?)<a href="(\/VOA_Special_English\/([A-Za-z_-]{1,}?)[-_]{1,}([0-9]{5}))[.]html" target="_blank">.*?[\s]{1,}\([0-9]{4}-[0-9]{1}-[0-9]{1,2}\)<\/a>$/)
+            {warn($1);
+             exit();
+            }
+           else
+            {if(!exists($type{$1}))
+              {warn($1);
+               exit();
+              }
+             else
+              {my ($v1,$v3,$v4,$v5,$v6)=($1,$3,$4,$5,$6);
+               ($_ = $2) =~ s/ /_/g;
+               if($v1 ne $_)
+                {warn($_);
+                 exit();
+                }
+               else
+                {my $v2='';
+                 if($v3=~/lrc[.]gif/)
+                  {if($v3!~/<a href="\/lrc(\/[0-9]{6}\/se-([^-]{2,6})-[0-9A-Za-z-]{1,})[.]lrc" target=_blank><img src="\/images\/lrc[.]gif" width="27" height="15" border="0"><\/a>/)
+                    {warn($v3);
+                     exit();
+                    }
+                   else
+                    {if($2 ne $type{$v1})
+                      {warn($v1.' '.$2);
+                       exit();
+                      }
+                     else
+                      {$v2=$1;
+                      }
+                    }
+                  }
+                 if($v3!~/yi[.]gif/)
+                  {$v3='';
+                  }
+                 else
+                  {if($v3!~/<a href="(\/VOA_Special_English\/[0-9A-Za-z_-]{1,}_1[.]html)" target="_blank"><img src="\/images\/yi[.]gif" width="27" height="15" border="0"><\/a>/)
+                    {warn($v3);
+                     exit();
+                    }
+                   else
+                    {if($v4.'_1.html' ne $1)
+                      {warn($v4.' '.$1);
+                       exit();
+                      }
+                     else
+                      {
+                       $v3=$1;
+                      }
+                    }
+                  }
+                
+                 if('' ne $v2 && '' ne $v3)
+                  {$v6.='.'.$v5;
+                   print('curl -v -A \'\' -o'.$v6.'.mp3 http://down.51voa.com'.$v2.'.mp3 && curl -v -A \'\' -o'.$v6.'.lrc http://www.51voa.com/lrc'.$v2.'.lrc && curl -v -A \'\' -o'.$v6.'.html http://www.51voa.com'.$v3.''."\n\n\n");
+                  }
+                }
+              }
+            }
+           
+          }
+         $body=substr($body,$i);
+         if($body ne $part2)
+          {warn("PART2");
+           exit();
+          }
+         else
+          {
+          }
         }
       }
     }
