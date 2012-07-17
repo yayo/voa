@@ -3,7 +3,11 @@
 
 use strict;
 use warnings;
+use POSIX qw(mktime strftime);
 use IO::Socket::Socks;
+
+my $timezone=28800;
+my %month=('Jan'=>0,'Feb'=>1,'Mar'=>2,'Apr'=>3,'May'=>4,'Jun'=>5,'Jul'=>6,'Aug'=>7,'Sep'=>8,'Oct'=>9,'Nov'=>10,'Dec'=>11);
 
 my $part1="\xEF\xBB\xBF";
 $part1.=<<PART1;
@@ -94,27 +98,27 @@ $part2=substr($part2,0,length($part2)-2);
 
 my %programs=(
 'Technology_Report'=>'tech',
-'This_is_America'=>'',
+'This_is_America'=>'tia',
 'Agriculture_Report'=>'ag',
-'Science_in_the_News'=>'',
+'Science_in_the_News'=>'sin',
 'Health_Report'=>'health',
-'Explorations'=>'',
+'Explorations'=>'exp',
 'Education_Report'=>'ed',
-'The_Making_of_a_Nation'=>'',
+'The_Making_of_a_Nation'=>'nation',
 'Economics_Report'=>'econ',
-'American_Mosaic'=>'',
+'American_Mosaic'=>'am',
 'In_the_News'=>'itn',
-'American_Stories'=>'',
+'American_Stories'=>'as',
 'Words_And_Their_Stories'=>'ws',
-'People_in_America'=>'',
-'VOA_News'=>'',
+'People_in_America'=>'pia',
+'VOA_News'=>'news', # se- -> special_
 );
 
 sub sock($)
  {
-  #my $sock1 = IO::Socket::Socks->new(ProxyAddr=>'127.0.0.1',ProxyPort=>'9050',ConnectAddr=>$_[0],ConnectPort=>80,SocksDebug=>0);
-  my $sock1 = IO::Socket::INET->new(PeerAddr=>$_[0],PeerPort=>80,Proto=>'tcp',Timeout=>1);
-  return($sock1);
+  #$_ = IO::Socket::Socks->new(ProxyAddr=>'127.0.0.1',ProxyPort=>'9050',ConnectAddr=>$_[0],ConnectPort=>80,SocksDebug=>0);
+  $_ = IO::Socket::INET->new(PeerAddr=>$_[0],PeerPort=>80,Proto=>'tcp',Timeout=>1);
+  return($_);
  }
 
 sub http($$$$)
@@ -135,28 +139,49 @@ sub http($$$$)
        }
       else
        {my $Content_Length;
+        my $Last_Modified;
         while(defined($_[0]) && ($_=readline($_[0])) && ("\r\n" ne $_) )
          {if($_ =~ /^Content-Length: ([0-9]{1,})\r\n$/)
            {$Content_Length=$1;
            }
+          elsif($_ =~ /^Last-Modified: (?:Sun|Mon|Thu|Wed|Tue|Fri|Sat), ([0-9]{2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ([0-9]{4}) ([0-9]{2}):([0-9]{2}):([0-9]{2}) GMT\r\n$/)
+           {my $t1=POSIX::mktime($6,$5,$4,$1,$month{$2},$3-1900,0,0,-1)+$timezone;
+            my $t2=POSIX::strftime('Last-Modified: %a, %d %b %Y %H:%M:%S GMT'."\r\n",gmtime($t1));
+            if($t2 ne $_)
+             {die($_.$t2);
+             }
+            else
+             {$Last_Modified=$t1;
+             }
+           }
          }
-        if(!defined($Content_Length))
-         {die('Not Found: Content-Length');
+        if("\r\n" ne $_)
+         {die('Incomplete HTTP Header!');
          }
         else
-         {if('HEAD' eq $_[1])
-           {
-            return($Content_Length);
+         {if(!defined($Content_Length))
+           {die('Not Found: Content-Length');
            }
           else
-           {my $body;
-            read($_[0],$body,$Content_Length);
-            if(length($body)!=$Content_Length)
-             {die(length($body).'!='.$Content_Length);
+           {if(!defined($Last_Modified))
+             {die('Not Found: Last-Modified');
              }
             else
              {
-              return($body);
+              if('HEAD' eq $_[1])
+               {
+                return($Content_Length,$Last_Modified);
+               }
+              else
+               {read($_[0],$_,$Content_Length);
+                if(length($_)!=$Content_Length)
+                 {die(length($_).'!='.$Content_Length);
+                 }
+                else
+                 {
+                  return($_,$Last_Modified);
+                 }
+               }
              }
            }
          }
@@ -174,7 +199,7 @@ if(! -d $prefix)
 else
  {my $sock1=sock('www.51voa.com');
   my $body;
-  if(defined($body=http($sock1,'GET','www.51voa.com','/VOA_Special_English/index.html')))     
+  if(defined($body=(http($sock1,'GET','www.51voa.com','/VOA_Special_English/index.html'))[0]))     
    {$|=1;
     if(substr($body,0,length($part1)) ne $part1)
      {die("PART1");
@@ -232,31 +257,40 @@ else
                  }
                }
               if('' ne $v2 && '' ne $v3)
-               {$v5=$prefix.'/'.$v6.'.'.$v5;
+               {$v5=~ s/-/_/g;
+                $v5=$prefix.'/'.$v6.'.'.$v5;
                 #print('curl -v -A \'\' -o'.$v5.'.mp3 http://down.51voa.com'.$v2.'.mp3'."\n".'curl -v -A \'\' -o'.$v5.'.lrc http://www.51voa.com/lrc'.$v2.'.lrc'."\n".'curl -v -A \'\' -o'.$v5.'.htm http://www.51voa.com'.$v3."\n");
                 my %filetype=( '.mp3'=>[$sock2,'down.51voa.com',$v2.'.mp3'], '.lrc'=>[$sock1,'www.51voa.com','/lrc'.$v2.'.lrc'], '.htm'=>[$sock1,'www.51voa.com',$v3] );
                 while(my($k,$v)=each(%filetype))
                  {$v6=$v5.$k;
                   print($v6.' => ');
-                  my $size=(-s $v6);
-                  if(defined($size))
-                   {my $Content_Length=http($$v[0],'HEAD',$$v[1],$$v[2]);
-                    if($size != $Content_Length)
-                     {die('size('.$v6.')='.$size.' <> size(http://'.$$v[1].$$v[2].')='.$Content_Length);
+                  @_=stat($v6);
+                  my ($size,$mtime)=@_[7,9];
+                  if(defined($size)&&defined($mtime))
+                   {@_=http($$v[0],'HEAD',$$v[1],$$v[2]);
+                    if($size != $_[0])
+                     {die('size('.$v6.')='.$size.' <> size(http://'.$$v[1].$$v[2].')='.$_[0]);
                      }
                     else
-                     {print('Updated'."\n");
+                     {if($mtime != $_[1])
+                       {die('mtime('.$v6.')='.$mtime.' <> mtime(http://'.$$v[1].$$v[2].')='.$_[1].' => FIX: touch -d \''.POSIX::strftime('%Y-%m-%d %H:%M:%S',gmtime($_[1])).'\' '.$v6."\n");
+                       }
+                      else
+                       {
+                        print('OK'."\n");
+                       }
                      }
                    }
                   else
-                   {$v4=http($$v[0],'GET',$$v[1],$$v[2]);
-                    if(!open(FILE,'>',$v6))
+                   {@_=http($$v[0],'GET',$$v[1],$$v[2]);
+                    if(!open($size,'>',$v6))
                      {die('Can NOT open: '.$v6);
                      }
                     else
                      {
-                      print FILE $v4;
-                      close(FILE);
+                      print {$size} $_[0];
+                      close($size);
+                      utime($_[1],$_[1],$v6);
                       print('Downloaded'."\n");
                      }
                    }
