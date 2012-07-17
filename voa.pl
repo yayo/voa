@@ -1,4 +1,6 @@
 
+# perl voa.pl /mnt/sdcard/external_sd/VOA
+
 use strict;
 use warnings;
 use IO::Socket::Socks;
@@ -90,9 +92,30 @@ PART2
 $part2 =~ s/\n/\r\n/g;
 $part2=substr($part2,0,length($part2)-2);
 
+my %programs=(
+'Technology_Report'=>'tech',
+'This_is_America'=>'',
+'Agriculture_Report'=>'ag',
+'Science_in_the_News'=>'',
+'Health_Report'=>'health',
+'Explorations'=>'',
+'Education_Report'=>'ed',
+'The_Making_of_a_Nation'=>'',
+'Economics_Report'=>'econ',
+'American_Mosaic'=>'',
+'In_the_News'=>'itn',
+'American_Stories'=>'',
+'Words_And_Their_Stories'=>'ws',
+'People_in_America'=>'',
+'VOA_News'=>'',
+);
 
-#my $sock = IO::Socket::Socks->new(ProxyAddr=>'127.0.0.1',ProxyPort=>'9050',ConnectAddr=>'www.51voa.com',ConnectPort=>80,SocksDebug=>0);
-my $sock = IO::Socket::INET->new(PeerAddr=>'www.51voa.com',PeerPort=>80,Proto=>'tcp',Timeout=>1);
+sub sock($)
+ {
+  #my $sock1 = IO::Socket::Socks->new(ProxyAddr=>'127.0.0.1',ProxyPort=>'9050',ConnectAddr=>$_[0],ConnectPort=>80,SocksDebug=>0);
+  my $sock1 = IO::Socket::INET->new(PeerAddr=>$_[0],PeerPort=>80,Proto=>'tcp',Timeout=>1);
+  return($sock1);
+ }
 
 sub http($$$$)
  {
@@ -142,155 +165,116 @@ sub http($$$$)
    }
  }
 
-
-if(!defined($sock)||!$sock->connected)
- {die('Connection Failed!');
+my $prefix=(1==scalar(@ARGV)?$ARGV[0]:'/tmp/VOA');
+$prefix =~ s/\/{2,}/\//g  ;
+$prefix =~ s/\/*$//;
+if(! -d $prefix)
+ {die('NO such directory: '.$prefix);
  }
 else
-{print $sock 'GET /VOA_Special_English/index.html HTTP/1.1'."\n".'Host: www.51voa.com'."\n".'Connection: Keep-Alive'."\n\n";
- $_=readline($sock);
- if('HTTP/1.1 200 OK'."\r\n" ne $_)
-  {die('Server Status Failed: '.$_);
-  }
- else
-  {my $Content_Length;
-   while(defined($sock) && ($_=readline($sock)) && ("\r\n" ne $_) )
-    {if($_ =~ /^Content-Length: ([0-9]{1,})\r\n$/)
-      {$Content_Length=$1;
-      }
-    }
-   if(!defined($Content_Length))
-    {die('Not Found: Content-Length');
-    }
-   else
-    {my $body;
-     read($sock,$body,$Content_Length);
-     if(length($body)!=$Content_Length)
-      {die(length($body).'!='.$Content_Length);
-      }
-     else
-      {if(substr($body,0,length($part1)) ne $part1)
-        {die("PART1");
-        }
-       else
-        {$body=substr($body,length($part1));
-         my $sock1 = IO::Socket::INET->new(PeerAddr=>'down.51voa.com',PeerPort=>80,Proto=>'tcp',Timeout=>1);
-         my $i=0;
-         while($body =~ /<li>(.*?)<\/li>/g)
-          {
-           $i+=4+length($1)+5;
-my %type=(
-'Technology_Report'=>'tech',
-'This_is_America'=>'',
-'Agriculture_Report'=>'ag',
-'Science_in_the_News'=>'',
-'Health_Report'=>'health',
-'Explorations'=>'',
-'Education_Report'=>'ed',
-'The_Making_of_a_Nation'=>'',
-'Economics_Report'=>'econ',
-'American_Mosaic'=>'',
-'In_the_News'=>'itn',
-'American_Stories'=>'',
-'Words_And_Their_Stories'=>'ws',
-'People_in_America'=>'',
-'VOA_News'=>'',
-);
-           #print($1."\n\n");
-           if($1 !~ /^<a href="\/(.*?)_1[.]html" target="_blank">[[] ([^]]*) []] <\/a> (.*?)<a href="(\/VOA_Special_English\/([0-9A-Za-z_-]{1,}?)[-_]{1,}([0-9]{5}))[.]html" target="_blank">.*?[\s]{1,}\([0-9]{4}-[0-9]{1}-[0-9]{1,2}\)<\/a>$/)
-            {die($1);
-            }
-           else
-            {if(!exists($type{$1}))
-              {die($1);
-              }
-             else
-              {my ($v1,$v3,$v4,$v5,$v6)=($1,$3,$4,$5,$6);
-               ($_ = $2) =~ s/ /_/g;
-               if($v1 ne $_)
-                {die($_);
-                }
-               else
-                {my $v2='';
-                 if($v3=~/lrc[.]gif/)
-                  {if($v3!~/<a href="\/lrc(\/[0-9]{6}\/se-([^-]{2,6})-[0-9A-Za-z-]{1,})[.]lrc" target=_blank><img src="\/images\/lrc[.]gif" width="27" height="15" border="0"><\/a>/)
-                    {die($v3);
-                    }
-                   else
-                    {if($2 ne $type{$v1})
-                      {die($v1.' '.$2);
-                      }
-                     else
-                      {$v2=$1;
-                      }
-                    }
-                  }
-                 if($v3!~/yi[.]gif/)
-                  {$v3='';
-                  }
-                 else
-                  {if($v3!~/<a href="(\/VOA_Special_English\/[0-9A-Za-z_-]{1,}_1[.]html)" target="_blank"><img src="\/images\/yi[.]gif" width="27" height="15" border="0"><\/a>/)
-                    {die($v3);
-                    }
-                   else
-                    {if($v4.'_1.html' ne $1)
-                      {die($v4.' '.$1);
-                      }
-                     else
-                      {
-                       $v3=$1;
-                      }
-                    }
-                  }
-                
-                 if('' ne $v2 && '' ne $v3)
-                  {$v6.='.'.$v5;
-                   #print('curl -v -A \'\' -o'.$v6.'.mp3 http://down.51voa.com'.$v2.'.mp3'."\n".'curl -v -A \'\' -o'.$v6.'.lrc http://www.51voa.com/lrc'.$v2.'.lrc'."\n".'curl -v -A \'\' -o'.$v6.'.htm http://www.51voa.com'.$v3."\n");
-                   my $prefix='/tmp/voa/VOA';
-
-                   my %filetype=( '.mp3'=>[$sock1,'down.51voa.com',$v2.'.mp3'], '.lrc'=>[$sock,'www.51voa.com','/lrc'.$v2.'.lrc'], '.htm'=>[$sock,'www.51voa.com',$v3] );
-                   while(my($k,$v)=each(%filetype))
-                    {
-                     #print($prefix.'/'.$v6.$k.' '.(-s $prefix.'/'.$v6.$k)."\n");
-                     print($prefix.'/'.$v6.$k);
-                     my $size=(-s $prefix.'/'.$v6.$k);
-                     if(defined($size))
-                      {my $Content_Length=http($$v[0],'HEAD',$$v[1],$$v[2]);
-                       if($size != $Content_Length)
-                        {die('size('.$prefix.'/'.$v6.$k.')='.$size.' <> size(http://'.$$v[1].$$v[2].')='.$Content_Length);
-                        }
-                       else
-                        {print(' => Updated'."\n");
-                        }
-                      }
-                     else
-                      {if(!open(FILE,'>',$prefix.'/'.$v6.$k))
-                        {die('Can NOT open: '.$prefix.'/'.$v6.$k);
-                        }
-                       else
-                        {
-                         print FILE http($$v[0],'GET',$$v[1],$$v[2]);
-                         close(FILE);
-                         print(' => Downloaded'."\n");
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-         $sock1->close();
-         $body=substr($body,$i);
-         if($body ne $part2)
-          {die("PART2");
-          }
-         else
-          {print('Completed Successfully!'."\n");
-          }
-        }
-      }
-    }
-  }
- $sock->close();
-}
+ {my $sock1=sock('www.51voa.com');
+  my $body;
+  if(defined($body=http($sock1,'GET','www.51voa.com','/VOA_Special_English/index.html')))     
+   {$|=1;
+    if(substr($body,0,length($part1)) ne $part1)
+     {die("PART1");
+     }
+    else
+     {$body=substr($body,length($part1));
+      my $i=0;
+      my $sock2=sock('down.51voa.com');
+      while($body =~ /<li>(.*?)<\/li>/g)
+       {
+        $i+=4+length($1)+5;
+        if($1 !~ /^<a href="\/(.*?)_1[.]html" target="_blank">[[] ([^]]*) []] <\/a> (.*?)<a href="(\/VOA_Special_English\/([0-9A-Za-z_-]{1,}?)[-_]{1,}([0-9]{5}))[.]html" target="_blank">.*?[\s]{1,}\([0-9]{4}-[0-9]{1}-[0-9]{1,2}\)<\/a>$/)
+         {die($1);
+         }
+        else
+         {if(!exists($programs{$1}))
+           {die($1);
+           }
+          else
+           {my ($v1,$v3,$v4,$v5,$v6)=($1,$3,$4,$5,$6);
+            ($_ = $2) =~ s/ /_/g;
+            if($v1 ne $_)
+             {die($_);
+             }
+            else
+             {my $v2='';
+              if($v3=~/lrc[.]gif/)
+               {if($v3!~/<a href="\/lrc(\/[0-9]{6}\/se-([^-]{2,6})-[0-9A-Za-z-]{1,})[.]lrc" target=_blank><img src="\/images\/lrc[.]gif" width="27" height="15" border="0"><\/a>/)
+                 {die($v3);
+                 }
+                else
+                 {if($2 ne $programs{$v1})
+                   {die($v1.' '.$2);
+                   }
+                  else
+                   {$v2=$1;
+                   }
+                 }
+               }
+              if($v3!~/yi[.]gif/)
+               {$v3='';
+               }
+              else
+               {if($v3!~/<a href="(\/VOA_Special_English\/[0-9A-Za-z_-]{1,}_1[.]html)" target="_blank"><img src="\/images\/yi[.]gif" width="27" height="15" border="0"><\/a>/)
+                 {die($v3);
+                 }
+                else
+                 {if($v4.'_1.html' ne $1)
+                   {die($v4.' '.$1);
+                   }
+                  else
+                   {
+                    $v3=$1;
+                   }
+                 }
+               }
+              if('' ne $v2 && '' ne $v3)
+               {$v5=$prefix.'/'.$v6.'.'.$v5;
+                #print('curl -v -A \'\' -o'.$v5.'.mp3 http://down.51voa.com'.$v2.'.mp3'."\n".'curl -v -A \'\' -o'.$v5.'.lrc http://www.51voa.com/lrc'.$v2.'.lrc'."\n".'curl -v -A \'\' -o'.$v5.'.htm http://www.51voa.com'.$v3."\n");
+                my %filetype=( '.mp3'=>[$sock2,'down.51voa.com',$v2.'.mp3'], '.lrc'=>[$sock1,'www.51voa.com','/lrc'.$v2.'.lrc'], '.htm'=>[$sock1,'www.51voa.com',$v3] );
+                while(my($k,$v)=each(%filetype))
+                 {$v6=$v5.$k;
+                  print($v6.' => ');
+                  my $size=(-s $v6);
+                  if(defined($size))
+                   {my $Content_Length=http($$v[0],'HEAD',$$v[1],$$v[2]);
+                    if($size != $Content_Length)
+                     {die('size('.$v6.')='.$size.' <> size(http://'.$$v[1].$$v[2].')='.$Content_Length);
+                     }
+                    else
+                     {print('Updated'."\n");
+                     }
+                   }
+                  else
+                   {$v4=http($$v[0],'GET',$$v[1],$$v[2]);
+                    if(!open(FILE,'>',$v6))
+                     {die('Can NOT open: '.$v6);
+                     }
+                    else
+                     {
+                      print FILE $v4;
+                      close(FILE);
+                      print('Downloaded'."\n");
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+      $sock2->close();
+      $body=substr($body,$i);
+      if($body ne $part2)
+       {die("PART2");
+       }
+      else
+       {print('Completed Successfully!'."\n");
+       }
+     }
+    $sock1->close();
+   }
+ }
