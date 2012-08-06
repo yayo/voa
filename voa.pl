@@ -97,21 +97,21 @@ $section2 =~ s/\n/\r\n/g;
 $section2=substr($section2,0,length($section2)-2);
 
 my %programs=(
-'Technology_Report'=>'tech',
-'This_is_America'=>'tia',
-'Agriculture_Report'=>'ag',
-'Science_in_the_News'=>'sin',
-'Health_Report'=>'health',
-'Explorations'=>'exp',
-'Education_Report'=>'ed',
-'The_Making_of_a_Nation'=>'nation',
-'Economics_Report'=>'econ',
-'American_Mosaic'=>'am',
-'In_the_News'=>'itn',
-'American_Stories'=>'as',
-'Words_And_Their_Stories'=>'ws',
-'People_in_America'=>'pia',
-'VOA_News'=>'news', # se- -> special_
+'Technology_Report'=>{'tech'=>0},
+'This_is_America'=>{'tia'=>0},
+'Agriculture_Report'=>{'ag'=>0},
+'Science_in_the_News'=>{'sin'=>0},
+'Health_Report'=>{'health'=>0,'hea'=>0},
+'Explorations'=>{'exp'=>0},
+'Education_Report'=>{'ed'=>0},
+'The_Making_of_a_Nation'=>{'nation'=>0},
+'Economics_Report'=>{'econ'=>0},
+'American_Mosaic'=>{'am'=>0},
+'In_the_News'=>{'itn'=>0},
+'American_Stories'=>{'as'=>0},
+'Words_And_Their_Stories'=>{'ws'=>0},
+'People_in_America'=>{'pia'=>0},
+'VOA_News'=>{'news'=>0}, # se- -> special_
 );
 
 sub sock($)
@@ -212,7 +212,7 @@ else
          }
         else
          {if(defined($_[2]))
-           {if($_[3] ne $programs{$_[0]})
+           {if(!exists($programs{$_[0]}{$_[3]}))
              {die($_[0].' '.$_[3]);
              }
             else
