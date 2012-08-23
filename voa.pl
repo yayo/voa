@@ -223,7 +223,7 @@ else
                 else
                  {$_='/'.$_[2].'/se-'.$_[3].'-'.$_[4];
                   %_=( 'mp3'=>[$sock2,'down.51voa.com',$_.'.mp3'], 'lrc'=>[$sock1,'www.51voa.com','/lrc'.$_.'.lrc'], 'htm'=>[$sock1,'www.51voa.com','/VOA_Special_English/'.$_[5].'_1.html'] );
-                  $_[6] =~ s/-/_/g;
+                  $_[6] =~ s/[_-]{1,}/_/g;
                   $_=$prefix.'/'.$_[8].'.'.$_[6];
                   while(my($k,$v)=each(%_))
                    {$k=$_.'.'.$k;
