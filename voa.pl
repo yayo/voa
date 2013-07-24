@@ -19,19 +19,21 @@ $section1.=<<SECTION1;
 <meta name="robots" content="all" />
 <meta name="keywords" content="VOA,美国之音,VOA Special English,慢速英语" />
 <meta name="description" content="VOA Special English,慢速英语" />
-<link rel="stylesheet" type="text/css" href="/images/style.css" />
+<link rel="stylesheet" type="text/css" href="/common/2013.css" />
 </head>
 <body>
 <div id="logo"><a href="/"><img src="/images/voa.gif" alt="VOA美国之音"></a></div>
-<div id="nav"><a title="VOA" href="/"><b>美国之音</b></a> > <a href="/VOA_Special_English/" title="慢速英语">VOA Special English</a> <script type="text/javascript" src="/js/notice.js"></script></div>
-<div id="leftMainContainer">
-<div id="leftNav">
-<div class="leftN_title"><a href="/VOA_Standard_English/">VOA Standard English</a></div>
+<div id="nav"><a title="VOA" href="/"><b>美国之音</b></a> > <a href="/VOA_Special_English/" title="慢速英语">VOA Special English</a></div>
+<div id="notice"></div>
+
+<div id="main_box">
+<div id="left_nav">
+<div class="left_nav_title"><a href="/VOA_Standard_English/">VOA Standard English</a></div>
 <ul>
 <li><a href="/VOA_Standard_1.html">VOA Standard English <img src=/images/new.gif border=0></a></li> 
 <li><a href="/VOA_Standard_1_archiver.html">VOA Standard English Archives </a></li> 
 </ul>
-<div class="leftN_title"><a href="/VOA_Special_English/">VOA Special English</a></div>
+<div class="left_nav_title"><a href="/VOA_Special_English/">VOA Special English</a></div>
 <ul>
 <li><a href="/Technology_Report_1.html">Technology Report</a></li>
 <li><a href="/This_is_America_1.html">This is America</a></li>
@@ -47,12 +49,13 @@ $section1.=<<SECTION1;
 <li><a href="/American_Stories_1.html">American Stories</a></li>
 <li><a href="/Words_And_Their_Stories_1.html">Words And Their Stories</a></li>
 <li><a href="/People_in_America_1.html">People in America</a></li>
-<li><a href="/VOA_News_1.html">World News</a></li>
+<li><a href="/as_it_is_1.html">AS IT IS</a></li>
 
 </ul>
-<div class="leftN_title"><a href="/VOA_English_Learning/">VOA English Learning</a></div>
+<div class="left_nav_title"><a href="/VOA_English_Learning/">VOA English Learning</a></div>
 <ul>
 <li><a href="/Bilingual_News_1.html">Bilingual News</a></li>
+<li><a href="/English_in_a_Minute_1.html">English in a Minute</a></li>
 <li><a href="/Learn_A_Word_1.html">Learn A Word</a></li>
 <li><a href="/How_American_English_1.html">How to Say it</a></li>
 <li><a href="/Business_Etiquette_1.html">Business Etiquette</a></li>
@@ -67,50 +70,51 @@ $section1.=<<SECTION1;
 </ul>
 </div>
 
-<div id="rightContainer">
-<div id="right_List_VOA">
+<div id="right_box">
+<div id="right_box_title"><a href="/VOA_Special_English">VOA慢速英语听力最近更新</a></div>
+<div id="list"><ul>
+SECTION1
+$section1 =~ s/\n/\r\n/g;
+
+my $section2=<<SECTION2;
+</ul></div>
+</div>
+<div id="voa_right_topics">
 <script type="text/javascript"><!--
-google_ad_client = "pub-3585518775245612";
-/* 51VOA_List 728x90 */
-google_ad_slot = "6619664191";
+google_ad_client = "pub-3485155664852876";
+/* 51List */
+google_ad_slot = "3607015265";
 google_ad_width = 728;
 google_ad_height = 90;
 //-->
 </script>
 <script type="text/javascript"
 src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
-</div>
-<div id="List_Title"><a href="/VOA_Special_English">VOA慢速英语听力最近更新</a></div>
-<span id="blist"><ul>
-SECTION1
-$section1 =~ s/\n/\r\n/g;
-
-my $section2=<<SECTION2;
- </ul></span>
-</div><div class="clearing"></div></div>
+</script></div>
+<div class="clearing"></div></div>
 <div class="clearing"></div>
-<div id="footer"><a href="/"><img  src="/images/copyright.gif" alt="VOA美国之音"></a> <div id="count"><script language=javascript src="/js/count.js"></script> </div> </div>
+<div id="footer"><a href="/"><img  src="/images/copyright.gif" alt="VOA美国之音"></a> <div id="common"><script language=javascript src="/common/main.js"></script></div></div>
 </body></html>
 SECTION2
 $section2 =~ s/\n/\r\n/g;
 $section2=substr($section2,0,length($section2)-2);
 
 my %programs=(
-'Technology_Report'=>{'tech'=>0},
-'This_is_America'=>{'tia'=>0},
-'Agriculture_Report'=>{'ag'=>0},
-'Science_in_the_News'=>{'sin'=>0},
-'Health_Report'=>{'health'=>0,'hea'=>0},
+'Technology_Report'=>['Technology Report',{'tech'=>0}],
+'This_is_America'=>['This is America',{'tia'=>0}],
+'Agriculture_Report'=>['Agriculture Report',{'agr'=>0}],
+'Science_in_the_News'=>['Science in the News',{'sin'=>0}],
+'Health_Report'=>['Health Report',{'health'=>0,'hea'=>0}],
 'Explorations'=>{'exp'=>0},
-'Education_Report'=>{'ed'=>0},
-'The_Making_of_a_Nation'=>{'nation'=>0},
-'Economics_Report'=>{'econ'=>0},
-'American_Mosaic'=>{'am'=>0},
-'In_the_News'=>{'itn'=>0},
+'Education_Report'=>['Education Report',{'edu'=>0}],
+'The_Making_of_a_Nation'=>['The Making of a Nation',{'nation'=>0}],
+'Economics_Report'=>['Economics Report',{'econ'=>0,'eco'=>0}],
+'American_Mosaic'=>['American Mosaic',{'am'=>0}],
+'In_the_News'=>['In the News',{'itn'=>0}],
 'American_Stories'=>{'as'=>0},
-'Words_And_Their_Stories'=>{'ws'=>0},
+'Words_And_Their_Stories'=>['Words And Their Stories',{'ws'=>0}],
 'People_in_America'=>{'pia'=>0},
+'as_it_is'=>['AS IT IS',''],
 'VOA_News'=>{'news'=>0}, # se- -> special_
 );
 
@@ -126,13 +130,24 @@ sub http($$$$)
    {die('Connection Failed!');
    }
   else
-   {print {$_[0]} $_[1].' '.$_[3].' HTTP/1.1'."\n".'Host: '.$_[2]."\n".'Connection: Keep-Alive'."\n\n";
+   {
+    print {$_[0]} $_[1].' '.$_[3].' HTTP/1.1'."\n".'Host: '.$_[2]."\n".'Connection: Keep-Alive'."\n\n";
     if(!defined(my $i=readline($_[0])))
      {die('Server Closed Connection!');
      }
     else
      {if($i !~ /^HTTP\/1[.][01] 200 OK\r\n$/)
-       {die('Server Status Failed: '.$i);
+       {if($i !~ /^HTTP\/1[.][01] 302 Found\r\n$/)
+         {
+          die('Server Status Failed: '.$i.$_[3]);
+         }
+        else
+         {
+          while(defined($_[0]) && ($i=readline($_[0])) && ("\r\n" ne $i) )
+           {print $i;
+           }
+          die('302 Redirect NOT Implemented: '.$_[3]);
+         }
        }
       else
        {my $Content_Length;
@@ -196,68 +211,75 @@ else
   if(defined($body=(http($sock1,'GET','www.51voa.com','/VOA_Special_English/index.html'))[0]))     
    {$|=1;
     if(substr($body,0,length($section1)) ne $section1)
-     {die('SECTION1 NOT matched!');
+     {
+      #print $section1;
+      print substr($body,0,length($section1));
+      die('SECTION1 NOT matched!');
      }
     else
      {$body=substr($body,length($section1));
       my $i=0;
       my $sock2=sock('down.51voa.com');
-      while($body =~ /<li><a href="\/(Technology_Report|This_is_America|Agriculture_Report|Science_in_the_News|Health_Report|Explorations|Education_Report|The_Making_of_a_Nation|Economics_Report|American_Mosaic|In_the_News|American_Stories|Words_And_Their_Stories|People_in_America|VOA_News)_1[.]html" target="_blank">[[] ([^]]{1,}) []] <\/a> (?:<a href="\/lrc\/([0-9]{6})\/se-([a-z]{2,6})-([^.]{1,})[.]lrc" target=_blank><img src="\/images\/lrc[.]gif" width="27" height="15" border="0"><\/a>){0,1} (?:<a href="\/VOA_Special_English\/([0-9A-Za-z_-]{1,})_1[.]html" target="_blank"><img src="\/images\/yi[.]gif" width="27" height="15" border="0"><\/a> ){0,1}<a href="\/VOA_Special_English\/([0-9A-Za-z_-]{1,}?)([_-]{1,})([0-9]{5})[.]html" target="_blank">([0-9A-Za-z '+,-:;?‘’“”]{1,})  \([0-9]{4}-[0-9]{1}-([0-9]{1,2})\)<\/a><\/li>/g)
-       {$i+=14+length($1)+27+length($2)+8+(defined($3)?24+length($4)+1+length($5)+85:0)+1+(defined($6)?30+length($6)+90:0)+30+length($7)+length($8)+28+length($10)+10+length($11)+10;
-        #die(pos($body).' '.$i."\n") if(pos($body)!=$i); # DEBUG1
-        @_=($1,$2,$3,$4,$5,$6,$7,$8,$9);
-        ($_=$1) =~ s/_/ /g;
-        if($_[1] ne $_)
-         {die($_.' '.$_[1]);
+      while($body =~ /<li>(.*?)<\/li>/g)
+       {if($1 !~ /<a href="\/(Technology_Report|This_is_America|Agriculture_Report|Science_in_the_News|Health_Report|Explorations|Education_Report|The_Making_of_a_Nation|Economics_Report|American_Mosaic|In_the_News|American_Stories|Words_And_Their_Stories|People_in_America|as_it_is|VOA_News)_1[.]html" target="_blank">[[] ([^]]{1,}) []] <\/a> (?:<a href="\/lrc\/([0-9]{6})\/se-([a-z]{2,6})-([^.]{1,})[.]lrc" target=_blank><img src="\/images\/lrc[.]gif" width="27" height="15" border="0"><\/a>){0,1} (?:<a href="\/VOA_Special_English\/([0-9A-Za-z._-]{1,})_1[.]html" target="_blank"><img src="\/images\/yi[.]gif" width="27" height="15" border="0"><\/a> ){0,1}<a href="\/VOA_Special_English\/([0-9A-Za-z._-]{1,}?)([_-]{1,})([0-9]{5})[.]html" target="_blank">([0-9A-Za-z '"+,-:;?‘’“”]{1,})  \([0-9]{4}-[0-9]{1}-([0-9]{1,2})\)<\/a>/)
+         {die($1);
          }
         else
-         {if(defined($_[2]))
-           {if(!exists($programs{$_[0]}{$_[3]}))
-             {die($_[0].' '.$_[3]);
-             }
-            else
-             {if(defined($_[5]))
-               {if($_[5] ne $_[6].$_[7].$_[8])
-                 {die($_[5].' '.$_[6].$_[7].$_[8]);
-                 }
-                else
-                 {$_='/'.$_[2].'/se-'.$_[3].'-'.$_[4];
-                  %_=( 'mp3'=>[$sock2,'down.51voa.com',$_.'.mp3'], 'lrc'=>[$sock1,'www.51voa.com','/lrc'.$_.'.lrc'], 'htm'=>[$sock1,'www.51voa.com','/VOA_Special_English/'.$_[5].'_1.html'] );
-                  $_[6] =~ s/[_-]{1,}/_/g;
-                  $_=$prefix.'/'.$_[8].'.'.$_[6];
-                  while(my($k,$v)=each(%_))
-                   {$k=$_.'.'.$k;
-                    print($k);
-                    @_=stat($k);
-                    my ($size,$mtime)=@_[7,9];
-                    if(defined($size)&&defined($mtime))
-                     {print(' => ');
-                      @_=http($$v[0],'HEAD',$$v[1],$$v[2]);
-                      if($size != $_[0])
-                       {die('size('.$k.')='.$size.' <> size(http://'.$$v[1].$$v[2].')='.$_[0]);
-                       }
-                      else
-                       {if(1<abs($mtime-$_[1]))
-                         {warn('mtime('.$k.')='.$mtime.' <> mtime(http://'.$$v[1].$$v[2].')='.$_[1].' => FIX: touch -d \''.POSIX::strftime('%Y-%m-%d %H:%M:%S',gmtime($_[1])).'\' '.$k."\n");
-                          exit();
-                          #utime($_[1],$_[1],$k);
+         {$i+=14+length($1)+27+length($2)+8+(defined($3)?24+length($4)+1+length($5)+85:0)+1+(defined($6)?30+length($6)+90:0)+30+length($7)+length($8)+28+length($10)+10+length($11)+10;
+          #die(pos($body).' '.$i."\n") if(pos($body)!=$i); # DEBUG1
+          @_=($1,$2,$3,$4,$5,$6,$7,$8,$9);
+          if($_[1] ne $programs{$1}[0])
+           {die($1.' '.$_[1]);
+           }
+          else
+           {if(defined($_[2]))
+             {if(!exists($programs{$_[0]}[1]{$_[3]}))
+               {die($_[0].' '.$_[3]);
+               }
+              else
+               {if(defined($_[5]))
+                 {if($_[5] ne $_[6].$_[7].$_[8])
+                   {die($_[5].' '.$_[6].$_[7].$_[8]);
+                   }
+                  else
+                   {$_='/'.$_[2].'/se-'.$_[3].'-'.$_[4];
+                    %_=( 'mp3'=>[$sock2,'down.51voa.com',$_.'.mp3'], 'lrc'=>[$sock1,'www.51voa.com','/lrc'.$_.'.lrc'], 'htm'=>[$sock1,'www.51voa.com','/VOA_Special_English/'.$_[5].'_1.html'] );
+                    $_[6] =~ s/[_-]{1,}/_/g;
+                    $_=$prefix.'/'.$_[8].'.'.$_[6];
+                    while(my($k,$v)=each(%_))
+                     {$k=$_.'.'.$k;
+                      print($k);
+                      @_=stat($k);
+                      my ($size,$mtime)=@_[7,9];
+                      if(defined($size)&&defined($mtime))
+                       {print(' => ');
+                        @_=http($$v[0],'HEAD',$$v[1],$$v[2]);
+                        if($size != $_[0])
+                         {die('size('.$k.')='.$size.' <> size(http://'.$$v[1].$$v[2].')='.$_[0]);
                          }
                         else
-                         {print('OK'."\n");
+                         {if(1<abs($mtime-$_[1]))
+                           {warn('mtime('.$k.')='.$mtime.' <> mtime(http://'.$$v[1].$$v[2].')='.$_[1].' => FIX: touch -d \''.POSIX::strftime('%Y-%m-%d %H:%M:%S',gmtime($_[1])).'\' '.$k."\n");
+                            exit();
+                            #utime($_[1],$_[1],$k);
+                           }
+                          else
+                           {print('OK'."\n");
+                           }
                          }
                        }
-                     }
-                    else
-                     {print(' -> ');
-                      @_=http($$v[0],'GET',$$v[1],$$v[2]);
-                      if(!open($size,'>',$k))
-                       {die('Can NOT open: '.$k);
-                       }
                       else
-                       {print {$size} $_[0];
-                        close($size);
-                        utime($_[1],$_[1],$k);
-                        print('Downloaded'."\n");
+                       {print(' -> ');
+                        @_=http($$v[0],'GET',$$v[1],$$v[2]);
+                        if(!open($size,'>',$k))
+                         {die('Can NOT open: '.$k);
+                         }
+                        else
+                         {print {$size} $_[0];
+                          close($size);
+                          utime($_[1],$_[1],$k);
+                          print('Downloaded'."\n");
+                         }
                        }
                      }
                    }
@@ -270,7 +292,10 @@ else
       $sock2->close();
       $body=substr($body,$i);
       if($body ne $section2)
-       {die('SECTION2 NOT matched!'); # uncomment DEBUG1
+       {
+        #print $body;
+        #print $section2;
+        die('SECTION2 NOT matched!'); # uncomment DEBUG1
        }
       else
        {print('Completed Successfully!'."\n");
@@ -279,3 +304,5 @@ else
     $sock1->close();
    }
  }
+
+
