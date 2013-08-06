@@ -102,7 +102,7 @@ $section2=substr($section2,0,length($section2)-2);
 my %programs=(
 'Technology_Report'=>['Technology Report',{'tech'=>0}],
 'This_is_America'=>['This is America',{'tia'=>0}],
-'Agriculture_Report'=>['Agriculture Report',{'agr'=>0}],
+'Agriculture_Report'=>['Agriculture Report',{'agr'=>0,'ag'=>0}],
 'Science_in_the_News'=>['Science in the News',{'sin'=>0}],
 'Health_Report'=>['Health Report',{'health'=>0,'hea'=>0}],
 'Explorations'=>{'exp'=>0},
